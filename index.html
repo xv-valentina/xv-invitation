@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>XV Valentina</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="XV Valentina" />
+    <meta name="keywords" content="XV Años" />
+    <meta name="author" content="FREEHTML5.CO" />
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Work+Sans:400,300,600,400italic,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Sacramento"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/animate.css" />
+    <link rel="stylesheet" href="css/icomoon.css" />
+    <link rel="stylesheet" href="css/bootstrap.css" />
+    <link rel="stylesheet" href="css/magnific-popup.css" />
+    <link rel="stylesheet" href="css/owl.carousel.min.css" />
+    <link rel="stylesheet" href="css/owl.theme.default.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/modernizr-2.6.2.min.js"></script>
+  </head>
+
+  <body>
+    <script type="module">
+      import { getDataUser } from "./js/fetch.js";
+      import { uploadFile } from "./js/fetch.js";
+      import { confirm } from "./js/fetch.js";
+
+      const dropzone = document.getElementById("dropzone");
+      const fileInput = document.getElementById("fileInput");
+      const fileName = document.getElementById("fileName");
+
+      dropzone.addEventListener("click", () => fileInput.click());
+
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.classList.add("active");
+      });
+
+      dropzone.addEventListener("dragleave", () => {
+        dropzone.classList.remove("active");
+      });
+
+      dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("active");
+
+        if (e.dataTransfer.files.length > 0) {
+          fileInput.files = e.dataTransfer.files;
+          fileName.textContent = e.dataTransfer.files[0].name;
+        }
+      });
+
+      fileInput.addEventListener("change", () => {
+        fileName.textContent =
+          fileInput.files.length > 0
+            ? fileInput.files[0].name
+            : "Ningún archivo seleccionado";
+      });
+
+      document.getElementById("uploadBtn").addEventListener("click", () => {
+        uploadFile(fileInput, fileName);
+      });
+
+      document.getElementById("confirmButton").addEventListener("click", () => {
+        confirm(localData[0]);
+      })
+
+      let localData;
+
+      async function updateHtmlWithData(data) {
+        const dataContainer = document.getElementById("name-guest");
+        dataContainer.innerHTML = "";
+
+        let companions = data[0].companions;
+        let ciaTitle = "";
+        if (data[0].isCompanions) {
+          ciaTitle = " & Cía.";
+
+          const dataCompanions = document.getElementById("companions");
+          dataCompanions.innerHTML = "";
+
+          companions.forEach((item, index) => {
+            const div = document.createElement("div");
+            div.classList.add("data-item");
+
+            div.innerHTML = `<h2 class='data-item-name'>${ item.name || "Nombre no disponible" }</h2>`;
+
+            const checkboxWrapper = document.createElement("div");
+            checkboxWrapper.classList.add("checkbox-wrapper-26");
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = `_checkbox-${index}`;
+            checkbox.value = item.id;
+            checkbox.checked = item.confirmed || false;
+
+            const label = document.createElement("label");
+            label.setAttribute("for", checkbox.id);
+
+            const tickMark = document.createElement("div");
+            tickMark.classList.add("tick_mark");
+
+            label.appendChild(tickMark);
+
+            checkboxWrapper.appendChild(checkbox);
+            checkboxWrapper.appendChild(label);
+
+            checkbox.addEventListener("change", (event) => {
+              item.confirmed = event.target.checked;
+            });
+
+            div.appendChild(checkboxWrapper);
+
+            dataCompanions.appendChild(div);
+          });
+
+          // OPCIÓN NO ASISTIREMOS
+          const div = document.createElement("div");
+          div.classList.add("data-item");
+
+          div.innerHTML = `<h2 class='data-item-name'>No Asistiremos</h2>`;
+
+          const checkboxWrapper = document.createElement("div");
+          checkboxWrapper.classList.add("checkbox-wrapper-26");
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.id = `_checkbox-99`;
+          checkbox.value = 0;
+          checkbox.checked = false;
+
+          const label = document.createElement("label");
+          label.setAttribute("for", checkbox.id);
+
+          const tickMark = document.createElement("div");
+          tickMark.classList.add("tick_mark");
+
+          label.appendChild(tickMark);
+
+          checkboxWrapper.appendChild(checkbox);
+          checkboxWrapper.appendChild(label);
+
+          div.appendChild(checkboxWrapper);
+
+          dataCompanions.appendChild(div);
+        }
+
+        const div = document.createElement("div");
+        div.innerHTML = `<h2>${
+          data[0].name + ciaTitle || "Nombre no disponible"
+        }</h2>`;
+        dataContainer.appendChild(div);
+      }
+
+      function setDate() {
+        var d = new Date(new Date().getTime() + 200 * 120 * 120 * 2000);
+
+        simplyCountdown(".simply-countdown-one", {
+          year: 2025,
+          month: 3,
+          day: 15,
+        });
+
+        $("#simply-countdown-losange").simplyCountdown({
+          year: d.getFullYear(),
+          month: d.getMonth() + 1,
+          day: d.getDate(),
+          enableUtc: false,
+        });
+      }
+
+      window.onload = async () => {
+        localData = await getDataUser();
+        updateHtmlWithData(localData);
+        setDate();
+      };
+    </script>
+
+    <style>
+      .data-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        gap: 4rem;
+      }
+
+      .data-item h2 {
+        margin: 0;
+        font-size: 35px;
+      }
+
+      .data-item input[type="checkbox"] {
+        transform: scale(5);
+      }
+
+      @media (max-width: 600px) {
+        .data-item {
+          align-items: center;
+          justify-content: center;
+        }
+
+        #fh5co-started {
+          min-height: 800px;
+        }
+      }
+
+      .checkbox-wrapper-26 * {
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+      }
+
+      .checkbox-wrapper-26 input[type="checkbox"] {
+        display: none;
+      }
+
+      .checkbox-wrapper-26 label {
+        --size: 30px;
+        position: relative;
+        display: block;
+        width: var(--size);
+        height: var(--size);
+        margin: 0 auto;
+        background-color: rgb(223, 90, 148);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: 0.2s ease transform, 0.2s ease background-color;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .checkbox-wrapper-26 label:before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 0;
+        left: 0;
+        width: calc(var(--size) * 0.7);
+        height: calc(var(--size) * 0.7);
+        margin: 0 auto;
+        background-color: #fff;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        box-shadow: inset 0 var(--shadow) #ffbeb8;
+        transition: 0.2s ease width, 0.2s ease height;
+      }
+
+      .checkbox-wrapper-26 label:hover:before {
+        width: calc(var(--size) * 0.55);
+        height: calc(var(--size) * 0.55);
+        box-shadow: inset 0 var(--shadow) #ff9d96;
+      }
+
+      .checkbox-wrapper-26 label:active {
+        transform: scale(0.9);
+      }
+
+      .checkbox-wrapper-26 .tick_mark {
+        position: absolute;
+        top: -1px;
+        right: 0;
+        left: calc(var(--size) * -0.05);
+        width: calc(var(--size) * 0.6);
+        height: calc(var(--size) * 0.6);
+        margin: 0 auto;
+        margin-left: calc(var(--size) * 0.14);
+        transform: rotateZ(-40deg);
+      }
+
+      .checkbox-wrapper-26 .tick_mark:before,
+      .checkbox-wrapper-26 .tick_mark:after {
+        content: "";
+        position: absolute;
+        background-color: #fff;
+        border-radius: 2px;
+        opacity: 0;
+        transition: 0.2s ease transform, 0.2s ease opacity;
+      }
+
+      .checkbox-wrapper-26 .tick_mark:before {
+        left: 0;
+        bottom: 0;
+        width: calc(var(--size) * 0.1);
+        height: calc(var(--size) * 0.3);
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.23);
+        transform: translateY(calc(var(--size) * -0.68));
+      }
+
+      .checkbox-wrapper-26 .tick_mark:after {
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: calc(var(--size) * 0.1);
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.23);
+        transform: translateX(calc(var(--size) * 0.78));
+      }
+
+      .checkbox-wrapper-26 input[type="checkbox"]:checked + label {
+        background-color: #07d410;
+        box-shadow: 0 var(--shadow) #92ff97;
+      }
+
+      .checkbox-wrapper-26 input[type="checkbox"]:checked + label:before {
+        width: 0;
+        height: 0;
+      }
+
+      .checkbox-wrapper-26
+        input[type="checkbox"]:checked
+        + label
+        .tick_mark:before,
+      .checkbox-wrapper-26
+        input[type="checkbox"]:checked
+        + label
+        .tick_mark:after {
+        transform: translate(0);
+        opacity: 1;
+      }
+
+      .dropzone {
+        width: 100%;
+        max-width: 400px;
+        padding: 30px;
+        border: 2px dashed #ee9abf;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin: auto;
+      }
+
+      .dropzone:hover {
+        background-color: #e2e6ea;
+      }
+
+      .dropzone.active {
+        background-color: #d1ecf1;
+        border-color: #ee9abf;
+      }
+
+      .dropzone p {
+        margin: 0;
+        font-size: 16px;
+        color: #ee9abf;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+
+    <div class="fh5co-loader"></div>
+
+    <div id="page">
+      <nav class="fh5co-nav" role="navigation">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <div id="fh5co-logo">
+                <a class="font-size: small">Mis XV</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <header
+        id="fh5co-header"
+        class="fh5co-cover"
+        role="banner"
+        style="background-image: url(images/fondo2.jpeg)"
+        data-stellar-background-ratio="0.5"
+      >
+        <div class="overlay"></div>
+        <div class="container">
+          <div class="row">
+            <div class="col-md-8 col-md-offset-2 text-center">
+              <div class="display-t">
+                <div
+                  class="display-tc animate-box"
+                  data-animate-effect="fadeIn"
+                >
+                  <h1 style="font-size: xxx-large">Angie Valentina</h1>
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+
+                  <h1 style="font-size: revert">Tan solo faltan</h1>
+                  <div
+                    class="simply-countdown simply-countdown-one"
+                    style="margin-bottom: 1.4rem"
+                  ></div>
+                  <h1 style="font-size: revert">Para este dia tan especial</h1>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div id="fh5co-couple">
+        <div class="container">
+          <div class="row">
+            <div
+              class="col-md-8 col-md-offset-2 text-center fh5co-heading event-info-container animate-box"
+            >
+              <div id="name-guest"></div>
+              <br />
+              <p>
+                Hay eventos en la vida que son muy especiales y compartirlos con
+                quienes más quiero los convierte en momentos únicos e
+                inolvidables.
+              </p>
+            </div>
+          </div>
+          <div class="couple-wrap animate-box">
+            <p class="heart text-center"><i class="icon-heart2"></i></p>
+            <div class="couple-half">
+              <div
+                class="desc-bride text-center fh5co-heading"
+                style="margin-top: 40px"
+              >
+                <p>Con la bendición de Dios y en compañía de mis padres</p>
+
+                <h2></h2>
+                <h3 style="margin-top: 50px">
+                  Johanna Orozco y Jose Contreras
+                </h3>
+
+                <p style="margin-top: 50px">
+                  Nos complace invitarte a ser parte de este gran día
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="fh5co-event"
+        class="fh5co-bg"
+        style="background-image: url(images/img_bg_3.jpg)"
+      >
+        <div class="overlay"></div>
+        <div class="container">
+          <div class="row">
+            <div
+              class="col-md-8 col-md-offset-2 text-center fh5co-heading animate-box"
+            >
+              <span>Nuestro Evento Especial</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="display-t">
+              <div class="display-tc">
+                <div class="col-md-10 col-md-offset-1 event-info-location">
+                  <div class="col-md-6 col-sm-6 text-center">
+                    <div class="event-wrap animate-box">
+                      <h3>Recepción</h3>
+                      <div class="event-col">
+                        <i class="icon-clock"></i>
+                        <span>Hora Inicio</span>
+                        <span>7:00 PM</span>
+                      </div>
+                      <div class="event-col">
+                        <i class="icon-calendar"></i>
+                        <span>Fecha del evento</span>
+                        <span>15 Marzo, 2025</span>
+                      </div>
+                      <p class="m-0 p-0">Casa cristal.</p>
+                      <p class="m-0 p-0">Av. Cra. 30 N 1B - 24 - Piso 4</p>
+
+                      <a
+                        href="https://maps.app.goo.gl/KWHdCB8hDMk7rh1C8"
+                        class="btn btn-default btn-sm"
+                        target="_blank"
+                        >Ver Mapa</a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="fh5co-services" class="fh5co-section-gray">
+        <div class="container">
+          <div class="row animate-box">
+            <div
+              class="col-md-8 col-md-offset-2 text-center fh5co-heading detail-event-title"
+            >
+              <h2>Detalles del evento</h2>
+            </div>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-content">
+                <div class="timeline-image-icon">
+                  <img
+                    src="./images/women-dress.svg"
+                    alt="Man in Black Dress"
+                  />
+                </div>
+                <div class="text-timeline">
+                  <h3>Para ellas</h3>
+                  <p>
+                    This represents the man in a black dress, symbolizing
+                    sophistication and style. Reservarse el uso del color rosado
+                    y morado
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-content">
+                <div class="timeline-image-icon">
+                  <img
+                    src="./images/black-dress.svg"
+                    alt="Man in Black Dress"
+                  />
+                </div>
+                <div class="text-timeline">
+                  <h3>Para ellos</h3>
+                  <p>
+                    This represents the man in a black dress, symbolizing
+                    sophistication and style. Reservarse el uso del color rosado
+                    y morado
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-content">
+                <div class="timeline-image-icon">
+                  <img
+                    src="./images/letter-finance2.svg"
+                    alt="Man in Black Dress"
+                  />
+                </div>
+                <div class="text-timeline">
+                  <h3>Regalos</h3>
+                  <p>Lluvia de sobres</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="fh5co-services" class="fh5co-section-gray">
+        <div class="container">
+          <div class="row animate-box">
+            <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+              <h2>Comparte un video con nosotros antes del evento</h2>
+
+              <div id="dropzone" class="dropzone" style="margin-top: 10rem;">
+                <p>
+                  Arrastra y suelta un archivo aquí<br />o haz clic para
+                  seleccionar uno
+                </p>
+              </div>
+
+              <br />
+              <span id="fileName">Ningún archivo seleccionado</span>
+              <br />
+
+              <a id="uploadBtn" class="btn btn-default btn-sm" style="margin-top: 1.5rem;">🚀 Enviar</a>
+
+              <input
+                type="file"
+                id="fileInput"
+                accept="image/*,video/*"
+                class="hidden"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="fh5co-started"
+        class="fh5co-bg"
+        style="background-image: url(images/img_bg_4.jpg)"
+      >
+        <div class="overlay"></div>
+        <div class="container">
+          <div class="row animate-box">
+            <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+              <h2>¿Quién te acompaña?</h2>
+
+              <p>
+                Por favor ayudanos confirmando tu asistencia y la de tus
+                acompañantes, para tus acompañantes selecciona el check
+                correspondiente.
+              </p>
+
+              <div id="companions"></div>
+            </div>
+
+            <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+              <button
+                type="submit"
+                class="btn btn-default"
+                id="confirmButton"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gototop js-top">
+      <a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
+    </div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery.easing.1.3.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.countTo.js"></script>
+    <script src="js/jquery.stellar.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/magnific-popup-options.js"></script>
+    <script src="js/simplyCountdown.js"></script>
+    <script src="js/main.js"></script>
+
+  </body>
+</html>
