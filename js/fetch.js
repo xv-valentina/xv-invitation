@@ -73,3 +73,15 @@ export async function uploadFile(fileInput, fileName) {
     console.error("Error al subir el archivo:", error);
   }
 }
+
+
+export async function getPhotos() {
+  const apiUrl = api + `/Functions/File`;
+  try {
+    const response = await fetch(apiUrl, { method: "GET" });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return [];
+  }
+}

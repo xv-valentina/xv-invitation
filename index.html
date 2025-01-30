@@ -34,6 +34,7 @@
       import { getDataUser } from "./js/fetch.js";
       import { uploadFile } from "./js/fetch.js";
       import { confirm } from "./js/fetch.js";
+      import { getPhotos } from "./js/fetch.js";
 
       const dropzone = document.getElementById("dropzone");
       const fileInput = document.getElementById("fileInput");
@@ -73,9 +74,10 @@
 
       document.getElementById("confirmButton").addEventListener("click", () => {
         confirm(localData[0]);
-      })
+      });
 
       let localData;
+      let urlPhotos;
 
       async function updateHtmlWithData(data) {
         const dataContainer = document.getElementById("name-guest");
@@ -93,7 +95,9 @@
             const div = document.createElement("div");
             div.classList.add("data-item");
 
-            div.innerHTML = `<h2 class='data-item-name'>${ item.name || "Nombre no disponible" }</h2>`;
+            div.innerHTML = `<h2 class='data-item-name'>${
+              item.name || "Nombre no disponible"
+            }</h2>`;
 
             const checkboxWrapper = document.createElement("div");
             checkboxWrapper.classList.add("checkbox-wrapper-26");
@@ -181,6 +185,7 @@
 
       window.onload = async () => {
         localData = await getDataUser();
+        urlPhotos = await getPhotos();
         updateHtmlWithData(localData);
         setDate();
       };
@@ -568,7 +573,7 @@
             <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
               <h2>Comparte un video con nosotros antes del evento</h2>
 
-              <div id="dropzone" class="dropzone" style="margin-top: 10rem;">
+              <div id="dropzone" class="dropzone" style="margin-top: 10rem">
                 <p>
                   Arrastra y suelta un archivo aquí<br />o haz clic para
                   seleccionar uno
@@ -579,7 +584,12 @@
               <span id="fileName">Ningún archivo seleccionado</span>
               <br />
 
-              <a id="uploadBtn" class="btn btn-default btn-sm" style="margin-top: 1.5rem;">🚀 Enviar</a>
+              <a
+                id="uploadBtn"
+                class="btn btn-default btn-sm"
+                style="margin-top: 1.5rem"
+                >🚀 Enviar</a
+              >
 
               <input
                 type="file"
@@ -613,11 +623,7 @@
             </div>
 
             <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
-              <button
-                type="submit"
-                class="btn btn-default"
-                id="confirmButton"
-              >
+              <button type="submit" class="btn btn-default" id="confirmButton">
                 Confirmar
               </button>
             </div>
@@ -641,6 +647,5 @@
     <script src="js/magnific-popup-options.js"></script>
     <script src="js/simplyCountdown.js"></script>
     <script src="js/main.js"></script>
-
   </body>
 </html>
