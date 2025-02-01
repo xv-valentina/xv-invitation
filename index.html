@@ -77,21 +77,28 @@
 
       document.getElementById("confirmButton").addEventListener("click", () => {
         const noAsistiremosCheckbox = document.getElementById("_checkbox-99");
-        const noAsistiremosValue = noAsistiremosCheckbox.checked;
+        const noAsistiremosValue =
+          noAsistiremosCheckbox === null
+            ? false
+            : noAsistiremosCheckbox.checked;
         confirm(localData[0], noAsistiremosValue);
       });
 
       async function updateHtmlWithData(data) {
+        let labelTitle = "No asistiré";
+
         const dataContainer = document.getElementById("name-guest");
         dataContainer.innerHTML = "";
 
         let companions = data[0].companions;
         let ciaTitle = "";
-        if (data[0].isCompanions) {
-          ciaTitle = " & Cía.";
 
-          const dataCompanions = document.getElementById("companions");
-          dataCompanions.innerHTML = "";
+        const dataCompanions = document.getElementById("companions");
+        dataCompanions.innerHTML = "";
+
+        if (data[0].isCompanions) {
+          labelTitle = "No asistiremos";
+          ciaTitle = " & Cía.";
 
           companions.forEach((item, index) => {
             const div = document.createElement("div");
@@ -138,55 +145,56 @@
             div.appendChild(checkboxWrapper);
 
             dataCompanions.appendChild(div);
+            return;
           });
-
-          // OPCIÓN NO ASISTIREMOS
-          const div = document.createElement("div");
-          div.classList.add("data-item");
-
-          div.innerHTML = `<h2 class='data-item-name'>No Asistiremos</h2>`;
-
-          const checkboxWrapper = document.createElement("div");
-          checkboxWrapper.classList.add("checkbox-wrapper-26");
-
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.id = `_checkbox-99`;
-          checkbox.value = false;
-          checkbox.checked = false;
-
-          checkbox.addEventListener("change", (event) => {
-            if (event.target.checked) {
-              document
-                .querySelectorAll('input[type="checkbox"]:not(#_checkbox-99)')
-                .forEach((checkbox) => {
-                  checkbox.checked = false;
-                  checkbox.value = false;
-                });
-            }
-          });
-
-          const label = document.createElement("label");
-          label.setAttribute("for", checkbox.id);
-
-          const tickMark = document.createElement("div");
-          tickMark.classList.add("tick_mark");
-
-          label.appendChild(tickMark);
-
-          checkboxWrapper.appendChild(checkbox);
-          checkboxWrapper.appendChild(label);
-
-          div.appendChild(checkboxWrapper);
-
-          dataCompanions.appendChild(div);
         }
 
+        // OPCIÓN NO ASISTIREMOS
         const div = document.createElement("div");
-        div.innerHTML = `<h2>${
+        div.classList.add("data-item");
+
+        div.innerHTML = `<h2 class='data-item-name'>${labelTitle}</h2>`;
+
+        const checkboxWrapper = document.createElement("div");
+        checkboxWrapper.classList.add("checkbox-wrapper-26");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `_checkbox-99`;
+        checkbox.value = false;
+        checkbox.checked = false;
+
+        checkbox.addEventListener("change", (event) => {
+          if (event.target.checked) {
+            document
+              .querySelectorAll('input[type="checkbox"]:not(#_checkbox-99)')
+              .forEach((checkbox) => {
+                checkbox.checked = false;
+                checkbox.value = false;
+              });
+          }
+        });
+
+        const label = document.createElement("label");
+        label.setAttribute("for", checkbox.id);
+
+        const tickMark = document.createElement("div");
+        tickMark.classList.add("tick_mark");
+
+        label.appendChild(tickMark);
+
+        checkboxWrapper.appendChild(checkbox);
+        checkboxWrapper.appendChild(label);
+
+        div.appendChild(checkboxWrapper);
+
+        dataCompanions.appendChild(div);
+
+        const div2 = document.createElement("div");
+        div2.innerHTML = `<h2>${
           data[0].name + ciaTitle || "Nombre no disponible"
         }</h2>`;
-        dataContainer.appendChild(div);
+        dataContainer.appendChild(div2);
       }
 
       function setDate() {
@@ -287,7 +295,7 @@
       }
 
       window.onload = async () => {
-        const localData = await getDataUser();
+        localData = await getDataUser();
         updateHtmlWithData(localData);
         setDate();
         await setPhotos();

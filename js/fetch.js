@@ -18,30 +18,31 @@ export async function getDataUser() {
 export async function confirm(data, noAsistiremosValue) {
   const payload = {
     idGuest: data.id,
-    confirmed: noAsistiremosValue ? false : data.confirmed,
+    confirmed: noAsistiremosValue === true ? false : true,
     companions: data.companions.map(({ id, confirmed }) => ({
       idCompanion: id,
       confirmed: noAsistiremosValue ? false : confirmed
     })),
   };
+  console.log(payload);
 
-  const apiUrl = api + `/Functions/confirm`;
+  // const apiUrl = api + `/Functions/confirm`;
 
-  try {
-    const response = await fetch(apiUrl, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+  // try {
+  //   const response = await fetch(apiUrl, {
+  //     method: "PUT",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(payload),
+  //   });
 
-    const data = await response.json();
-    alert("Gracias por confirmar tus asistencias, puedes actualizarlas cuando quieras.");
-    location.reload();
-  } catch (error) {
-    throw error;
-  }
+  //   const data = await response.json();
+  //   alert("Gracias por confirmar tus asistencias, puedes actualizarlas cuando quieras.");
+  //   location.reload();
+  // } catch (error) {
+  //   throw error;
+  // }
 }
 
 export async function uploadFile(fileInput, fileName, folder) {
