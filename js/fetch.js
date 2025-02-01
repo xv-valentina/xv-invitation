@@ -15,13 +15,13 @@ export async function getDataUser() {
   }
 }
 
-export async function confirm(data) {
+export async function confirm(data, noAsistiremosValue) {
   const payload = {
     idGuest: data.id,
-    confirmed: data.confirmed,
+    confirmed: noAsistiremosValue ? false : data.confirmed,
     companions: data.companions.map(({ id, confirmed }) => ({
       idCompanion: id,
-      confirmed
+      confirmed: noAsistiremosValue ? false : confirmed
     })),
   };
 

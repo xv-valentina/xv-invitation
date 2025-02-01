@@ -40,6 +40,10 @@
       const fileInput = document.getElementById("fileInput");
       const fileName = document.getElementById("fileName");
 
+      let localData;
+      let images = [];
+      let index = 0;
+
       dropzone.addEventListener("click", () => fileInput.click());
 
       dropzone.addEventListener("dragover", (e) => {
@@ -73,11 +77,10 @@
       });
 
       document.getElementById("confirmButton").addEventListener("click", () => {
-        confirm(localData[0]);
+        const noAsistiremosCheckbox = document.getElementById("_checkbox-99");
+        const noAsistiremosValue = noAsistiremosCheckbox.checked;
+        confirm(localData[0], noAsistiremosValue);
       });
-
-      let localData;
-      let urlPhotos;
 
       async function updateHtmlWithData(data) {
         const dataContainer = document.getElementById("name-guest");
@@ -107,6 +110,16 @@
             checkbox.id = `_checkbox-${index}`;
             checkbox.value = item.id;
             checkbox.checked = item.confirmed || false;
+            checkbox.addEventListener("change", (event) => {
+              if (event.target.checked) {
+                document
+                  .querySelectorAll('input[type="checkbox"]:is(#_checkbox-99)')
+                  .forEach((checkbox) => {
+                    checkbox.checked = false;
+                    checkbox.value = false;
+                  });
+              }
+            });
 
             const label = document.createElement("label");
             label.setAttribute("for", checkbox.id);
@@ -140,8 +153,19 @@
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
           checkbox.id = `_checkbox-99`;
-          checkbox.value = 0;
+          checkbox.value = false;
           checkbox.checked = false;
+
+          checkbox.addEventListener("change", (event) => {
+            if (event.target.checked) {
+              document
+                .querySelectorAll('input[type="checkbox"]:not(#_checkbox-99)')
+                .forEach((checkbox) => {
+                  checkbox.checked = false;
+                  checkbox.value = false;
+                });
+            }
+          });
 
           const label = document.createElement("label");
           label.setAttribute("for", checkbox.id);
@@ -179,15 +203,52 @@
           year: d.getFullYear(),
           month: d.getMonth() + 1,
           day: d.getDate(),
-          enableUtc: false,
+          enableUtc: true,
         });
       }
 
+      async function sePhotos() {
+        const images = await getPhotos();
+        renderImages(images);
+      }
+
+      function renderImages(images) {
+        const gallery = document.getElementById("gallery");
+        gallery.innerHTML = "";
+
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("modalImg");
+        const closeBtn = document.querySelector(".close");
+
+        closeBtn.addEventListener("click", function () {
+          modal.style.display = "none";
+        });
+
+        modal.addEventListener("click", function (event) {
+          if (event.target === modal) {
+            modal.style.display = "none";
+          }
+        });
+
+        images.forEach((image) => {
+          const imgElement = document.createElement("img");
+          imgElement.src = image;
+          imgElement.alt = "imagen.jpg";
+          imgElement.classList.add("gallery-img");
+          imgElement.addEventListener("click", function (event) {
+            modal.style.display = "flex";
+            modalImg.src = event.target.src;
+          });
+          gallery.appendChild(imgElement);
+        });
+      }
+
+      
       window.onload = async () => {
-        localData = await getDataUser();
-        urlPhotos = await getPhotos();
+        const localData = await getDataUser();
         updateHtmlWithData(localData);
         setDate();
+        await sePhotos();
       };
     </script>
 
@@ -202,7 +263,7 @@
 
       .data-item h2 {
         margin: 0;
-        font-size: 35px;
+        font-size: 30px;
       }
 
       .data-item input[type="checkbox"] {
@@ -336,7 +397,7 @@
         width: 100%;
         max-width: 400px;
         padding: 30px;
-        border: 2px dashed #ee9abf;
+        border: 2px sol #ee9abf;
         border-radius: 10px;
         background-color: #f8f9fa;
         cursor: pointer;
@@ -362,23 +423,67 @@
       .hidden {
         display: none;
       }
+
+      .gallery-container {
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        display: flex;
+        justify-content: start;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        padding: 10px;
+      }
+
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-auto-flow: column;
+        grid-template-rows: repeat(2, 1fr);
+        gap: 10px;
+        scroll-snap-align: start;
+      }
+
+      .gallery img {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 10px;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 10px;
+      }
+
+      .close {
+        position: absolute;
+        top: 15px;
+        right: 25px;
+        color: white;
+        font-size: 35px;
+        font-weight: bold;
+        cursor: pointer;
+      }
     </style>
 
     <div class="fh5co-loader"></div>
 
     <div id="page">
-      <nav class="fh5co-nav" role="navigation">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-12">
-              <div id="fh5co-logo">
-                <a class="font-size: small">Mis XV</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
-
       <header
         id="fh5co-header"
         class="fh5co-cover"
@@ -395,10 +500,11 @@
                   class="display-tc animate-box"
                   data-animate-effect="fadeIn"
                 >
+                  <h1>Mis XV</h1>
+                  <br />
+
                   <h1 style="font-size: xxx-large">Angie Valentina</h1>
-                  <br />
-                  <br />
-                  <br />
+
                   <br />
 
                   <h1 style="font-size: revert">Tan solo faltan</h1>
@@ -430,11 +536,15 @@
             </div>
           </div>
           <div class="couple-wrap animate-box">
-            <p class="heart text-center"><i class="icon-heart2"></i></p>
+            <p class="heart text-center">
+              <i class="icon-heart2" style="padding: 5px"></i
+              ><i class="icon-heart2" style="padding: 5px"></i
+              ><i class="icon-heart2" style="padding: 5px"></i>
+            </p>
             <div class="couple-half">
               <div
                 class="desc-bride text-center fh5co-heading"
-                style="margin-top: 40px"
+                style="margin-top: 40px; margin-bottom: 40px"
               >
                 <p>Con la bendición de Dios y en compañía de mis padres</p>
 
@@ -448,6 +558,11 @@
                 </p>
               </div>
             </div>
+            <p class="heart text-center">
+              <i class="icon-heart2" style="padding: 5px"></i
+              ><i class="icon-heart2" style="padding: 5px"></i
+              ><i class="icon-heart2" style="padding: 5px"></i>
+            </p>
           </div>
         </div>
       </div>
@@ -455,7 +570,7 @@
       <div
         id="fh5co-event"
         class="fh5co-bg"
-        style="background-image: url(images/img_bg_3.jpg)"
+        style="background-image: url(images/background-vale4.jpeg)"
       >
         <div class="overlay"></div>
         <div class="container">
@@ -463,7 +578,7 @@
             <div
               class="col-md-8 col-md-offset-2 text-center fh5co-heading animate-box"
             >
-              <span>Nuestro Evento Especial</span>
+              <span style="font-size: 17.5px">Nuestro Evento Especial</span>
             </div>
           </div>
           <div class="row">
@@ -515,16 +630,16 @@
               <div class="timeline-content">
                 <div class="timeline-image-icon">
                   <img
-                    src="./images/women-dress.svg"
+                    src="./images/women-dress1.jpg"
                     alt="Man in Black Dress"
                   />
                 </div>
                 <div class="text-timeline">
                   <h3>Para ellas</h3>
                   <p>
-                    This represents the man in a black dress, symbolizing
-                    sophistication and style. Reservarse el uso del color rosado
-                    y morado
+                    Te invitamos a una noche especial donde la elegancia será la
+                    protagonista. Viste tu mejor vestido elegante y prepárate
+                    para una velada inolvidable. ¡No puedes faltar!
                   </p>
                 </div>
               </div>
@@ -534,16 +649,28 @@
               <div class="timeline-content">
                 <div class="timeline-image-icon">
                   <img
-                    src="./images/black-dress.svg"
+                    src="./images/black-dress3.png"
                     alt="Man in Black Dress"
+                    height="200px"
                   />
                 </div>
                 <div class="text-timeline">
                   <h3>Para ellos</h3>
                   <p>
-                    This represents the man in a black dress, symbolizing
-                    sophistication and style. Reservarse el uso del color rosado
-                    y morado
+                    Prepárate para una ocasión única. Te esperamos con tu mejor
+                    traje de paño para una noche llena de distinción y buenos
+                    momentos. ¡No faltes!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-content">
+                <div class="text-timeline">
+                  <h3>Reservamos...</h3>
+                  <p>
+                    El uso del color rosado y morado en todas sus tonalidades.
                   </p>
                 </div>
               </div>
@@ -602,10 +729,23 @@
         </div>
       </div>
 
+      <div id="fh5co-services" class="fh5co-section-gray">
+        <div class="container">
+          <div class="row animate-box">
+            <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+              <h2>Recuerdos de la fiesta</h2>
+              <div class="gallery-container">
+                <div class="gallery" id="gallery"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div
         id="fh5co-started"
         class="fh5co-bg"
-        style="background-image: url(images/img_bg_4.jpg)"
+        style="background-image: url(images/background-vale3.jpeg)"
       >
         <div class="overlay"></div>
         <div class="container">
@@ -613,13 +753,16 @@
             <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
               <h2>¿Quién te acompaña?</h2>
 
+              <br />
+              <br />
+
               <p>
                 Por favor ayudanos confirmando tu asistencia y la de tus
                 acompañantes, para tus acompañantes selecciona el check
                 correspondiente.
               </p>
 
-              <div id="companions"></div>
+              <div id="companions" style="margin-top: 5rem"></div>
             </div>
 
             <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
@@ -634,6 +777,11 @@
 
     <div class="gototop js-top">
       <a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
+    </div>
+
+    <div id="imageModal" class="modal">
+      <span class="close">&times;</span>
+      <img class="modal-content" id="modalImg" />
     </div>
 
     <script src="js/jquery.min.js"></script>
