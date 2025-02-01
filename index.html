@@ -42,7 +42,6 @@
 
       let localData;
       let images = [];
-      let index = 0;
 
       dropzone.addEventListener("click", () => fileInput.click());
 
@@ -73,7 +72,7 @@
       });
 
       document.getElementById("uploadBtn").addEventListener("click", () => {
-        uploadFile(fileInput, fileName);
+        uploadFile(fileInput, fileName, "Antes");
       });
 
       document.getElementById("confirmButton").addEventListener("click", () => {
@@ -207,7 +206,7 @@
         });
       }
 
-      async function sePhotos() {
+      async function setPhotos() {
         const images = await getPhotos();
         renderImages(images);
       }
@@ -218,6 +217,7 @@
 
         const modal = document.getElementById("imageModal");
         const modalImg = document.getElementById("modalImg");
+        const modalVideo = document.getElementById("modalVideo");
         const closeBtn = document.querySelector(".close");
 
         closeBtn.addEventListener("click", function () {
@@ -230,25 +230,68 @@
           }
         });
 
-        images.forEach((image) => {
-          const imgElement = document.createElement("img");
-          imgElement.src = image;
-          imgElement.alt = "imagen.jpg";
-          imgElement.classList.add("gallery-img");
-          imgElement.addEventListener("click", function (event) {
-            modal.style.display = "flex";
-            modalImg.src = event.target.src;
-          });
-          gallery.appendChild(imgElement);
+        images.forEach((file) => {
+          const fileExtension = file.split(".").pop().toLowerCase();
+          let mediaElement;
+
+          if (
+            fileExtension.toLowerCase() === "jpg" ||
+            fileExtension.toLowerCase() === "jpeg" ||
+            fileExtension.toLowerCase() === "png" ||
+            fileExtension.toLowerCase() === "gif"
+          ) {
+            mediaElement = document.createElement("img");
+            mediaElement.src = file;
+            mediaElement.alt = "imagen.jpg";
+            mediaElement.classList.add("gallery-img");
+            mediaElement.addEventListener("click", function (event) {
+              modal.style.display = "flex";
+              modalImg.src = event.target.src;
+            });
+          } else if (
+            fileExtension.toLowerCase() === "mp4" ||
+            fileExtension.toLowerCase() === "webm" ||
+            fileExtension.toLowerCase() === "ogg" ||
+            fileExtension.toLowerCase() === "mov"
+          ) {
+            mediaElement = document.createElement("video");
+            mediaElement.src = file;
+            mediaElement.alt = "video.mp4";
+            mediaElement.classList.add("gallery-video");
+            mediaElement.controls = true;
+            mediaElement.addEventListener("click", function (event) {
+              modal.style.display = "flex";
+              modalVideo.src = event.target.src;
+            });
+          }
+
+          if (mediaElement) {
+            gallery.appendChild(mediaElement);
+          }
         });
       }
 
-      
+      function showBlockIfBeforeFutureDate() {
+        const currentDate = new Date();
+        const futureDate = new Date("2025-03-15T19:00:00");
+        // const futureDate = new Date("2025-02-01T00:55:00");
+
+        if (currentDate > futureDate) {
+          document.getElementById("restrict-date1").remove();
+          document.getElementById("restrict-date3").remove();
+          return;
+        } else {
+          document.getElementById("restrict-date2").remove();
+          return;
+        }
+      }
+
       window.onload = async () => {
         const localData = await getDataUser();
         updateHtmlWithData(localData);
         setDate();
-        await sePhotos();
+        await setPhotos();
+        showBlockIfBeforeFutureDate();
       };
     </script>
 
@@ -444,7 +487,8 @@
         scroll-snap-align: start;
       }
 
-      .gallery img {
+      .gallery img,
+      video {
         width: 200px;
         height: 200px;
         object-fit: cover;
@@ -694,94 +738,106 @@
         </div>
       </div>
 
-      <div id="fh5co-services" class="fh5co-section-gray">
-        <div class="container">
-          <div class="row animate-box">
-            <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
-              <h2>Comparte un video con nosotros antes del evento</h2>
+      <div id="restrict-date1">
+        <div id="fh5co-services" class="fh5co-section-gray">
+          <div class="container">
+            <div class="row animate-box">
+              <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+                <h2>Comparte un video con nosotros antes del evento</h2>
 
-              <div id="dropzone" class="dropzone" style="margin-top: 10rem">
+                <div id="dropzone" class="dropzone" style="margin-top: 10rem">
+                  <p>
+                    Arrastra y suelta un archivo aquí<br />o haz clic para
+                    seleccionar uno
+                  </p>
+                </div>
+
+                <br />
+                <span id="fileName">Ningún archivo seleccionado</span>
+                <br />
+
+                <a
+                  id="uploadBtn"
+                  class="btn btn-default btn-sm"
+                  style="margin-top: 1.5rem"
+                  >🚀 Enviar</a
+                >
+
+                <input
+                  type="file"
+                  id="fileInput"
+                  accept="image/*,video/*"
+                  class="hidden"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="restrict-date2">
+        <div id="fh5co-services" class="fh5co-section-gray">
+          <div class="container">
+            <div class="row animate-box">
+              <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+                <h2>Recuerdos de la fiesta</h2>
+                <div class="gallery-container">
+                  <div class="gallery" id="gallery"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="restrict-date3">
+        <div
+          id="fh5co-started"
+          class="fh5co-bg"
+          style="background-image: url(images/background-vale3.jpeg)"
+        >
+          <div class="overlay"></div>
+          <div class="container">
+            <div class="row animate-box">
+              <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+                <h2>¿Quién te acompaña?</h2>
+
+                <br />
+                <br />
+
                 <p>
-                  Arrastra y suelta un archivo aquí<br />o haz clic para
-                  seleccionar uno
+                  Por favor ayudanos confirmando tu asistencia y la de tus
+                  acompañantes, para tus acompañantes selecciona el check
+                  correspondiente.
                 </p>
+
+                <div id="companions" style="margin-top: 5rem"></div>
               </div>
 
-              <br />
-              <span id="fileName">Ningún archivo seleccionado</span>
-              <br />
-
-              <a
-                id="uploadBtn"
-                class="btn btn-default btn-sm"
-                style="margin-top: 1.5rem"
-                >🚀 Enviar</a
-              >
-
-              <input
-                type="file"
-                id="fileInput"
-                accept="image/*,video/*"
-                class="hidden"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="fh5co-services" class="fh5co-section-gray">
-        <div class="container">
-          <div class="row animate-box">
-            <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
-              <h2>Recuerdos de la fiesta</h2>
-              <div class="gallery-container">
-                <div class="gallery" id="gallery"></div>
+              <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
+                <button
+                  type="submit"
+                  class="btn btn-default"
+                  id="confirmButton"
+                >
+                  Confirmar
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <div
-        id="fh5co-started"
-        class="fh5co-bg"
-        style="background-image: url(images/background-vale3.jpeg)"
-      >
-        <div class="overlay"></div>
-        <div class="container">
-          <div class="row animate-box">
-            <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
-              <h2>¿Quién te acompaña?</h2>
-
-              <br />
-              <br />
-
-              <p>
-                Por favor ayudanos confirmando tu asistencia y la de tus
-                acompañantes, para tus acompañantes selecciona el check
-                correspondiente.
-              </p>
-
-              <div id="companions" style="margin-top: 5rem"></div>
-            </div>
-
-            <div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
-              <button type="submit" class="btn btn-default" id="confirmButton">
-                Confirmar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="gototop js-top">
-      <a href="#" class="js-gotop"><i class="icon-arrow-up"></i></a>
     </div>
 
     <div id="imageModal" class="modal">
       <span class="close">&times;</span>
-      <img class="modal-content" id="modalImg" />
+      <img id="modalImg" class="modal-content" />
+      <video
+        id="modalVideo"
+        class="modal-content"
+        style="display: none"
+        controls
+      ></video>
     </div>
 
     <script src="js/jquery.min.js"></script>

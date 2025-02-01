@@ -44,7 +44,7 @@ export async function confirm(data, noAsistiremosValue) {
   }
 }
 
-export async function uploadFile(fileInput, fileName) {
+export async function uploadFile(fileInput, fileName, folder) {
   if (!fileInput.files.length) {
     alert("Selecciona un archivo primero.");
     return;
@@ -53,7 +53,7 @@ export async function uploadFile(fileInput, fileName) {
   const formData = new FormData();
   formData.append("file", fileInput.files[0]);
 
-  const apiUrl = api + `/Functions/upload?folder=Antes`;
+  const apiUrl = api + `/Functions/upload?folder=${folder}`;
 
   try {
     const response = await fetch(apiUrl, {
