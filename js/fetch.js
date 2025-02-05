@@ -1,6 +1,5 @@
 const api = `https://vale.somee.com/api`;
 
-
 export async function getDataUser() {
   const urlParams = new URLSearchParams(window.location.search);
   const number = urlParams.get("number");
@@ -21,10 +20,9 @@ export async function confirm(data, noAsistiremosValue) {
     confirmed: noAsistiremosValue === true ? false : true,
     companions: data.companions.map(({ id, confirmed }) => ({
       idCompanion: id,
-      confirmed: noAsistiremosValue ? false : confirmed
+      confirmed: noAsistiremosValue ? false : confirmed,
     })),
   };
-  console.log(payload);
 
   const apiUrl = api + `/Functions/confirm`;
 
@@ -38,7 +36,9 @@ export async function confirm(data, noAsistiremosValue) {
     });
 
     const data = await response.json();
-    alert("Gracias por confirmar tus asistencias, puedes actualizarlas cuando quieras.");
+    alert(
+      "Gracias por confirmar tus asistencias, puedes actualizarlas cuando quieras."
+    );
     location.reload();
   } catch (error) {
     throw error;
@@ -75,14 +75,34 @@ export async function uploadFile(fileInput, fileName, folder) {
   }
 }
 
-
 export async function getPhotos() {
   const apiUrl = api + `/Functions/File`;
   try {
     const response = await fetch(apiUrl, { method: "GET" });
-    const data = await response.json();
-    return data;
+
+    if (!response.ok) {
+      throw new Error("Error al descargar el archivo ZIP");
+    }
+
+    const blob = await response.blob(); // Convertir la respuesta a un blob
+    const zip = await new window.JSZip().loadAsync(blob); // 👈 Usar "window.JSZip"
+
+    const mediaFiles = [];
+
+    for (const filename in zip.files) {
+      if (filename.match(/\.(jpg|jpeg|png|gif|webp|mp4|webm|mov)$/i)) {
+        const fileBlob = await zip.files[filename].async("blob");
+        const fileUrl = URL.createObjectURL(fileBlob);
+        mediaFiles.push({
+          filename,
+          url: fileUrl,
+          type: fileBlob.type.startsWith("image") ? "image" : "video",
+        });
+      }
+    }
+    return mediaFiles;
   } catch (error) {
+    console.error("Error al descargar el ZIP:", error);
     return [];
   }
 }

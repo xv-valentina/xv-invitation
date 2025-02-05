@@ -30,6 +30,7 @@
   </head>
 
   <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script type="module">
       import { getDataUser } from "./js/fetch.js";
       import { uploadFile } from "./js/fetch.js";
@@ -219,7 +220,7 @@
         renderImages(images);
       }
 
-      function renderImages(images) {
+      function renderImages(files) {
         const gallery = document.getElementById("gallery");
         gallery.innerHTML = "";
 
@@ -230,51 +231,49 @@
 
         closeBtn.addEventListener("click", function () {
           modal.style.display = "none";
+          modalImg.src = "";
+          modalVideo.src = "";
         });
 
         modal.addEventListener("click", function (event) {
           if (event.target === modal) {
             modal.style.display = "none";
+            modalImg.src = "";
+            modalVideo.src = "";
           }
         });
 
-        images.forEach((file) => {
-          const fileExtension = file.split(".").pop().toLowerCase();
-          let mediaElement;
+        files.forEach((file) => {
+          if (file.filename.match(/\.(jpg|jpeg|png|gif|webp|JPG|JPEG|PNG|GIF|WEBP)$/i)) {
+            const imgElement = document.createElement("img");
+            imgElement.src = file.url;
+            imgElement.alt = "Imagen";
+            imgElement.classList.add("gallery-img");
 
-          if (
-            fileExtension.toLowerCase() === "jpg" ||
-            fileExtension.toLowerCase() === "jpeg" ||
-            fileExtension.toLowerCase() === "png" ||
-            fileExtension.toLowerCase() === "gif"
-          ) {
-            mediaElement = document.createElement("img");
-            mediaElement.src = file;
-            mediaElement.alt = "imagen.jpg";
-            mediaElement.classList.add("gallery-img");
-            mediaElement.addEventListener("click", function (event) {
+            imgElement.addEventListener("click", function () {
               modal.style.display = "flex";
-              modalImg.src = event.target.src;
+              modalImg.src = file;
+              modalImg.style.display = "block";
+              modalVideo.style.display = "none";
             });
-          } else if (
-            fileExtension.toLowerCase() === "mp4" ||
-            fileExtension.toLowerCase() === "webm" ||
-            fileExtension.toLowerCase() === "ogg" ||
-            fileExtension.toLowerCase() === "mov"
-          ) {
-            mediaElement = document.createElement("video");
-            mediaElement.src = file;
-            mediaElement.alt = "video.mp4";
-            mediaElement.classList.add("gallery-video");
-            mediaElement.controls = true;
-            mediaElement.addEventListener("click", function (event) {
-              modal.style.display = "flex";
-              modalVideo.src = event.target.src;
-            });
-          }
 
-          if (mediaElement) {
-            gallery.appendChild(mediaElement);
+            gallery.appendChild(imgElement);
+          } else if (file.filename.match(/\.(mp4|webm|mov|MP4|WEBM|MOV)$/i)) {
+            const videoElement = document.createElement("video");
+            videoElement.src = file.url;
+            videoElement.alt = "Video";
+            videoElement.classList.add("gallery-video");
+            videoElement.controls = true;
+
+            videoElement.addEventListener("click", function () {
+              modal.style.display = "flex";
+              modalVideo.src = file;
+              modalVideo.style.display = "block";
+              modalImg.style.display = "none";
+              modalVideo.play();
+            });
+
+            gallery.appendChild(videoElement);
           }
         });
       }
