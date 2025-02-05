@@ -78,29 +78,29 @@ export async function uploadFile(fileInput, fileName, folder) {
 export async function getPhotos() {
   const apiUrl = api + `/Functions/File`;
   try {
-    const response = await fetch(apiUrl, { method: "GET" });
+    // const response = await fetch(apiUrl, { method: "GET" });
 
-    if (!response.ok) {
-      throw new Error("Error al descargar el archivo ZIP");
-    }
+    // if (!response.ok) {
+    //   throw new Error("Error al descargar el archivo ZIP");
+    // }
 
-    const blob = await response.blob(); // Convertir la respuesta a un blob
-    const zip = await new window.JSZip().loadAsync(blob); // 👈 Usar "window.JSZip"
+    // const blob = await response.blob();
+    // const zip = await new window.JSZip().loadAsync(blob);
 
-    const mediaFiles = [];
+    // const mediaFiles = [];
 
-    for (const filename in zip.files) {
-      if (filename.match(/\.(jpg|jpeg|png|gif|webp|mp4|webm|mov)$/i)) {
-        const fileBlob = await zip.files[filename].async("blob");
-        const fileUrl = URL.createObjectURL(fileBlob);
-        mediaFiles.push({
-          filename,
-          url: fileUrl,
-          type: fileBlob.type.startsWith("image") ? "image" : "video",
-        });
-      }
-    }
-    return mediaFiles;
+    // for (const filename in zip.files) {
+    //   if (filename.match(/\.(jpg|jpeg|png|gif|webp|mp4|webm|mov)$/i)) {
+    //     const fileBlob = await zip.files[filename].async("blob");
+    //     const fileUrl = URL.createObjectURL(fileBlob);
+    //     mediaFiles.push({
+    //       filename,
+    //       url: fileUrl,
+    //       type: fileBlob.type.startsWith("image") ? "image" : "video",
+    //     });
+    //   }
+    // }
+    // return mediaFiles;
   } catch (error) {
     console.error("Error al descargar el ZIP:", error);
     return [];
