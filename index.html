@@ -243,39 +243,45 @@
           }
         });
 
-        files.forEach((file) => {
-          if (file.filename.match(/\.(jpg|jpeg|png|gif|webp|JPG|JPEG|PNG|GIF|WEBP)$/i)) {
-            const imgElement = document.createElement("img");
-            imgElement.src = file.url;
-            imgElement.alt = "Imagen";
-            imgElement.classList.add("gallery-img");
+        if (files.length > 0) {
+          files.forEach((file) => {
+            if (
+              file.filename.match(
+                /\.(jpg|jpeg|png|gif|webp|JPG|JPEG|PNG|GIF|WEBP)$/i
+              )
+            ) {
+              const imgElement = document.createElement("img");
+              imgElement.src = file.url;
+              imgElement.alt = "Imagen";
+              imgElement.classList.add("gallery-img");
 
-            imgElement.addEventListener("click", function () {
-              modal.style.display = "flex";
-              modalImg.src = file;
-              modalImg.style.display = "block";
-              modalVideo.style.display = "none";
-            });
+              imgElement.addEventListener("click", function () {
+                modal.style.display = "flex";
+                modalImg.src = file;
+                modalImg.style.display = "block";
+                modalVideo.style.display = "none";
+              });
 
-            gallery.appendChild(imgElement);
-          } else if (file.filename.match(/\.(mp4|webm|mov|MP4|WEBM|MOV)$/i)) {
-            const videoElement = document.createElement("video");
-            videoElement.src = file.url;
-            videoElement.alt = "Video";
-            videoElement.classList.add("gallery-video");
-            videoElement.controls = true;
+              gallery.appendChild(imgElement);
+            } else if (file.filename.match(/\.(mp4|webm|mov|MP4|WEBM|MOV)$/i)) {
+              const videoElement = document.createElement("video");
+              videoElement.src = file.url;
+              videoElement.alt = "Video";
+              videoElement.classList.add("gallery-video");
+              videoElement.controls = true;
 
-            videoElement.addEventListener("click", function () {
-              modal.style.display = "flex";
-              modalVideo.src = file;
-              modalVideo.style.display = "block";
-              modalImg.style.display = "none";
-              modalVideo.play();
-            });
+              videoElement.addEventListener("click", function () {
+                modal.style.display = "flex";
+                modalVideo.src = file;
+                modalVideo.style.display = "block";
+                modalImg.style.display = "none";
+                modalVideo.play();
+              });
 
-            gallery.appendChild(videoElement);
-          }
-        });
+              gallery.appendChild(videoElement);
+            }
+          });
+        }
       }
 
       function showBlockIfBeforeFutureDate() {
